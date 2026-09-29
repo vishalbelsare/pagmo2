@@ -1,14 +1,10 @@
 pagmo
 =====
 
-[![Build Status](https://img.shields.io/circleci/project/github/esa/pagmo2/master.svg?style=for-the-badge)](https://circleci.com/gh/esa/pagmo2)
-[![Build Status](https://img.shields.io/github/workflow/status/esa/pagmo2/GitHub%20CI?style=for-the-badge)](https://github.com/esa/pagmo2/actions?query=workflow%3A%22GitHub+CI%22)
-[![Build Status](https://img.shields.io/travis/com/esa/pagmo2?style=for-the-badge)](https://travis-ci.com/esa/pagmo2)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/esa/pagmo2/main.yml?branch=master&style=for-the-badge)](https://github.com/esa/pagmo2/actions?query=workflow%3A%22GitHub+CI%22)
 [![Code Coverage](https://img.shields.io/codecov/c/github/esa/pagmo2.svg?style=for-the-badge)](https://codecov.io/github/esa/pagmo2?branch=master)
 
 [![Anaconda-Server Badge](https://img.shields.io/conda/vn/conda-forge/pagmo.svg?style=for-the-badge)](https://anaconda.org/conda-forge/pagmo)
-
-[![Join the chat at https://gitter.im/pagmo2/Lobby](https://img.shields.io/badge/gitter-join--chat-green.svg?logo=gitter-white&style=for-the-badge)](https://gitter.im/pagmo2/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02338/status.svg)](https://doi.org/10.21105/joss.02338)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1045337.svg)](https://doi.org/10.5281/zenodo.1045336)

@@ -3,6 +3,116 @@
 Changelog
 =========
 
+2.20.0 (2026-09-24)
+--------------------
+
+New
+~~~
+
+- Add the NSGA-III many-objective evolutionary algorithm
+  (`#633 <https://github.com/esa/pagmo2/pull/633>`__).
+
+- Add batch fitness evaluation support to the differential evolution algorithm
+  (`#645 <https://github.com/esa/pagmo2/pull/645>`__).
+
+- Add :cpp:func:`pagmo::topology::num_vertices()`
+  (`#626 <https://github.com/esa/pagmo2/pull/626>`__).
+
+Changes
+~~~~~~~
+
+- Allow the documentation build to use the latest Sphinx and Breathe releases
+  without an upper version pin.
+
+- NSGA-II and NSGA-III no longer require population sizes divisible by four
+  (`#642 <https://github.com/esa/pagmo2/pull/642>`__).
+
+- CMake package configuration files now respect ``<PackageName>_FIND_QUIETLY``
+  (`#610 <https://github.com/esa/pagmo2/pull/610>`__).
+
+Fix
+~~~
+
+- Fix BFE tests under C++20, where stateless lambdas are default-constructible
+  (`#634 <https://github.com/esa/pagmo2/pull/634>`__).
+
+- Fix ``extract<const T>()`` and builds with Clang 17 or later
+  (`#623 <https://github.com/esa/pagmo2/pull/623>`__).
+
+- Validate that the initial populations of NSGA-II and NSGA-III are within the
+  problem bounds
+  (`#630 <https://github.com/esa/pagmo2/pull/630>`__).
+
+- Fix :cpp:func:`pagmo::archipelago::set_topology()` with newly constructed
+  and legacy user-defined topologies
+  (`#626 <https://github.com/esa/pagmo2/pull/626>`__).
+
+- Fix validation of the ``stop_range`` argument in Compass Search
+  (`#644 <https://github.com/esa/pagmo2/pull/644>`__).
+
+- Make the hypervolume tests robust to platform floating-point differences
+  (`#627 <https://github.com/esa/pagmo2/pull/627>`__).
+
+2.19.1 (2024-08-09)
+-------------------
+
+New
+~~~
+
+- Add support for CMake ``UNITY_BUILD``
+  (`#564 <https://github.com/esa/pagmo2/pull/564>`__).
+
+Fix
+~~~
+
+- Fix GACO hanging when initial population is out
+  of bounds
+  (`#576 <https://github.com/esa/pagmo2/pull/576>`__).
+
+- Fix batch fitness evaluation for the ``unconstrain``
+  meta-problem
+  (`#575 <https://github.com/esa/pagmo2/pull/575>`__).
+
+- Several build/compiler warning fixes
+  (`#572 <https://github.com/esa/pagmo2/pull/572>`__,
+  `#566 <https://github.com/esa/pagmo2/pull/566>`__,
+  `#562 <https://github.com/esa/pagmo2/pull/562>`__,
+  `#542 <https://github.com/esa/pagmo2/pull/542>`__).
+
+2.19.0 (2023-01-21)
+-------------------
+
+New
+~~~
+
+- Added batch fitness evaluation to cmaes algorithm
+  (`#520 <https://github.com/esa/pagmo2/pull/520>`__).
+
+- Added batch fitness evaluation to unconstrain problem 
+  (`#502 <https://github.com/esa/pagmo2/pull/502>`__).
+
+- Added batch fitness evaluation to a new MOEAD generational algorithm
+  (`#508 <https://github.com/esa/pagmo2/pull/508>`__).
+
+- Improve performance for the task_queue class by caching and re-using existing threads.
+  (`#512 <https://github.com/esa/pagmo2/pull/512>`__).
+
+
+Changes
+~~~~~~~
+
+- Several typos were fixed in docs and also class name. Notably
+  hock_schittkowsky.hpp becames hock_schittkowski.hpp and thus breaks backward compatibility
+  if that problem is needed.
+  (`#531 <https://github.com/esa/pagmo2/pull/531>`__, 
+  `#509 <https://github.com/esa/pagmo2/pull/509>`__).
+
+Fix
+~~~
+
+- A fix for the gaco algorithm that now throws if ``ker`` size is < 2
+  (`#490 <https://github.com/esa/pagmo2/pull/490>`__).
+
 2.18.0 (2021-08-03)
 -------------------
 

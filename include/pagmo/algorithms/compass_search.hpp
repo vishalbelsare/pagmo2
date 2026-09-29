@@ -1,4 +1,4 @@
-/* Copyright 2017-2021 PaGMO development team
+/* Copyright 2017-2026 PaGMO development team
 
 This file is part of the PaGMO library.
 
@@ -88,8 +88,6 @@ namespace pagmo
  *    Kolda, Lewis, Torczon: 'Optimization by Direct Search: New Perspectives on Some Classical and Modern Methods'
  *    published in the SIAM Journal Vol. 45, No. 3, pp. 385-482 (2003)
  *
- *    http://www.cs.wm.edu/~va/research/sirev.pdf
- *
  * \endverbatim
  *
  */
@@ -110,7 +108,7 @@ public:
      * @param stop_range stop range
      * @param reduction_coeff range reduction coefficient
      * @throws std::invalid_argument if \p start_range is not in (0,1]
-     * @throws std::invalid_argument if \p stop_range is not in (start_range,1]
+     * @throws std::invalid_argument if \p stop_range is not in [0, start_range)
      * @throws std::invalid_argument if \p reduction_coeff is not in (0,1)
      */
     compass_search(unsigned max_fevals = 1, double start_range = .1, double stop_range = .01,

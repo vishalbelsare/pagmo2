@@ -1,4 +1,4 @@
-/* Copyright 2017-2021 PaGMO development team
+/* Copyright 2017-2026 PaGMO development team
 
 This file is part of the PaGMO library.
 
@@ -59,7 +59,7 @@ public:
     /// Constructor
     /**
      * Constructor of the algorithm object.
-     * In the very first step, algorithm requires the inital set of points to be sorted ASCENDING in the third
+     * In the very first step, algorithm requires the initial set of points to be sorted ASCENDING in the third
      * dimension. If the input is already sorted, user can skip this step using "initial_sorting = false" option, saving
      * some extra time.
      *

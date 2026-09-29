@@ -1,4 +1,4 @@
-/* Copyright 2017-2021 PaGMO development team
+/* Copyright 2017-2026 PaGMO development team
 
 This file is part of the PaGMO library.
 
@@ -31,6 +31,7 @@ see https://www.gnu.org/licenses/. */
 #include <boost/test/unit_test.hpp>
 
 #include <iostream>
+#include <limits>
 #include <string>
 
 #include <boost/lexical_cast.hpp>
@@ -68,6 +69,9 @@ BOOST_AUTO_TEST_CASE(construction_test)
     BOOST_CHECK_THROW((gaco{2u, 13u, 1.0, 0.0, 0.01, 0u, 7u, 1000u, 1000u, 0.0, false, 23u}), std::invalid_argument);
     BOOST_CHECK_THROW((gaco{2u, 13u, 1.0, 0.0, 0.01, 0u, 7u, 1000u, 1000u, 0.0, true, 23u}), std::invalid_argument);
     BOOST_CHECK_THROW((gaco{2u, 1u, 1.0, 0.0, 0.01, 1u, 7u, 1000u, 1000u, 0.0, false, 23u}), std::invalid_argument);
+    BOOST_CHECK_THROW((gaco{2u, 13u, 1.0, 0.0, std::numeric_limits<double>::quiet_NaN(), 1u, 7u, 1000u,
+                            1000u, 0.0, false, 23u}),
+                      std::invalid_argument);
 }
 
 BOOST_AUTO_TEST_CASE(evolve_test)
@@ -354,3 +358,14 @@ BOOST_AUTO_TEST_CASE(bfe_usage_test)
 
     BOOST_CHECK_EQUAL(pop.champion_f()[0], pop_2.champion_f()[0]);
 }
+
+BOOST_AUTO_TEST_CASE(out_of_bounds_test)
+{
+    population pop{rosenbrock{}, 10u, 23u};
+    pop.set_x(0, {-20., 12});//both out of bounds
+    gaco uda{10u, 10u, 1.0, 25.0, 0.01, 5u, 7u, 1000u, 1000u, 0.0, false, 23u};
+    uda.set_verbosity(1u);
+    uda.set_seed(23u);
+    pop = uda.evolve(pop);
+}
+

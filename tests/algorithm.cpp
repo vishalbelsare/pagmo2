@@ -1,4 +1,4 @@
-/* Copyright 2017-2021 PaGMO development team
+/* Copyright 2017-2026 PaGMO development team
 
 This file is part of the PaGMO library.
 
@@ -436,6 +436,13 @@ BOOST_AUTO_TEST_CASE(extract_test)
                               decltype(static_cast<const algorithm &>(p).extract<null_algorithm>())>::value));
     BOOST_CHECK(p.extract<null_algorithm>() != nullptr);
     BOOST_CHECK(static_cast<const algorithm &>(p).extract<null_algorithm>() != nullptr);
+    BOOST_CHECK(p.extract<const null_algorithm>() != nullptr);
+    BOOST_CHECK(static_cast<const algorithm &>(p).extract<const null_algorithm>() != nullptr);
+    BOOST_CHECK(p.is<const null_algorithm>());
+    BOOST_CHECK(static_cast<const algorithm &>(p).is<const null_algorithm>());
+    BOOST_CHECK(p.extract<const null_algorithm>() == static_cast<const null_algorithm *>(p.extract<null_algorithm>()));
+    BOOST_CHECK(static_cast<const algorithm &>(p).extract<const null_algorithm>()
+                == static_cast<const null_algorithm *>(static_cast<const algorithm &>(p).extract<null_algorithm>()));
 }
 
 struct ts1 {

@@ -1,4 +1,4 @@
-/* Copyright 2017-2021 PaGMO development team
+/* Copyright 2017-2026 PaGMO development team
 
 This file is part of the PaGMO library.
 
@@ -65,24 +65,24 @@ moead::moead(unsigned gen, std::string weight_generation, std::string decomposit
         pagmo_throw(std::invalid_argument, "Weight generation method requested is '" + m_decomposition
                                                + "', but only one of 'tchebycheff', 'weighted', 'bi' is allowed");
     }
-    if (CR > 1.0 || CR < 0.) {
+    if (CR > 1.0 || CR < 0. || (std::isfinite(CR) == false)) {
         pagmo_throw(
             std::invalid_argument,
             "The parameter CR (used by the differential evolution operator) needs to be in [0,1], while a value of "
                 + std::to_string(CR) + " was detected");
     }
-    if (F > 1.0 || F < 0.) {
+    if (F > 1.0 || F < 0. || (std::isfinite(F) == false)) {
         pagmo_throw(
             std::invalid_argument,
             "The parameter F (used by the differential evolution operator) needs to be in [0,1], while a value of "
                 + std::to_string(F) + " was detected");
     }
-    if (eta_m < 0.) {
+    if (eta_m < 0. || (std::isfinite(eta_m) == false)) {
         pagmo_throw(std::invalid_argument,
                     "The distribution index for the polynomial mutation (eta_m) needs to be positive, while a value of "
                         + std::to_string(eta_m) + " was detected");
     }
-    if (realb > 1.0 || realb < 0.) {
+    if (realb > 1.0 || realb < 0. || (std::isfinite(realb) == false)) {
         pagmo_throw(std::invalid_argument,
                     "The chance of considering a neighbourhood (realb) needs to be in [0,1], while a value of "
                         + std::to_string(realb) + " was detected");
@@ -99,6 +99,8 @@ moead::moead(unsigned gen, std::string weight_generation, std::string decomposit
  *
  * @param pop population to be evolved
  * @return evolved population
+ * @throws std::invalid_argument if any gene of the initial population is not finite or is outside the problem
+ * bounds, as the crossover and mutation operators assume feasible parents.
  */
 population moead::evolve(population pop) const
 {
@@ -142,6 +144,8 @@ population moead::evolve(population pop) const
                                                + ": too large for the input population having size "
                                                + std::to_string(NP));
     }
+    // We check that the initial population individuals are within the problem bounds.
+    detail::check_population_bounds(pop.get_x(), bounds, get_name());
     // Get out if there is nothing to do.
     if (m_gen == 0u) {
         return pop;

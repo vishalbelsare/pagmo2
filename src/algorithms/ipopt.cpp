@@ -1,4 +1,4 @@
-/* Copyright 2017-2021 PaGMO development team
+/* Copyright 2017-2026 PaGMO development team
 
 This file is part of the PaGMO library.
 
@@ -101,6 +101,8 @@ const ipopt_result_map_t ipopt_results = {PAGMO_DETAIL_IPOPT_RES_ENTRY(Solve_Suc
                                           PAGMO_DETAIL_IPOPT_RES_ENTRY(Maximum_Iterations_Exceeded),
                                           PAGMO_DETAIL_IPOPT_RES_ENTRY(Restoration_Failed),
                                           PAGMO_DETAIL_IPOPT_RES_ENTRY(Error_In_Step_Computation),
+                                          PAGMO_DETAIL_IPOPT_RES_ENTRY(Maximum_CpuTime_Exceeded),
+                                          PAGMO_DETAIL_IPOPT_RES_ENTRY(Maximum_WallTime_Exceeded),
                                           PAGMO_DETAIL_IPOPT_RES_ENTRY(Not_Enough_Degrees_Of_Freedom),
                                           PAGMO_DETAIL_IPOPT_RES_ENTRY(Invalid_Problem_Definition),
                                           PAGMO_DETAIL_IPOPT_RES_ENTRY(Invalid_Option),

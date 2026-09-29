@@ -1,4 +1,4 @@
-/* Copyright 2017-2021 PaGMO development team
+/* Copyright 2017-2026 PaGMO development team
 
 This file is part of the PaGMO library.
 
@@ -236,7 +236,7 @@ private:
     }
 
 public:
-    T m_value;
+    std::remove_const_t<T> m_value;
 };
 
 } // namespace detail
@@ -267,6 +267,8 @@ PAGMO_DLL_PUBLIC extern std::function<boost::any()> wait_raii_getter;
 PAGMO_DLL_PUBLIC extern std::function<void(const algorithm &, const population &,
                                            std::unique_ptr<detail::isl_inner_base> &)>
     island_factory;
+
+PAGMO_DLL_PUBLIC std::unique_ptr<task_queue> get_task_queue();
 
 // NOTE: the idea with this class is that we use it to store the data members of pagmo::island, and,
 // within pagmo::island, we store a pointer to an instance of this struct. The reason for this approach
@@ -317,11 +319,15 @@ struct PAGMO_DLL_PUBLIC island_data {
     // to be thread-safe.
     explicit island_data(std::unique_ptr<isl_inner_base> &&, algorithm &&, population &&, const r_policy &,
                          const s_policy &);
+
     // Delete all the rest, make sure we don't implicitly rely on any of this.
     island_data(const island_data &) = delete;
     island_data(island_data &&) = delete;
     island_data &operator=(const island_data &) = delete;
     island_data &operator=(island_data &&) = delete;
+
+    ~island_data();
+
     // The data members.
     // NOTE: isl_ptr has no associated mutex, as it's supposed to be fully
     // thread-safe on its own.
@@ -348,7 +354,9 @@ struct PAGMO_DLL_PUBLIC island_data {
     // This will be explicitly set only during archipelago::push_back().
     // In all other situations, it will be null.
     archipelago *archi_ptr = nullptr;
-    task_queue queue;
+    // NOTE: this will either create a brand new queue,
+    // or grab one from the global cache.
+    std::unique_ptr<task_queue> queue = get_task_queue();
 };
 
 } // namespace detail
@@ -1013,8 +1021,8 @@ public:
 #if defined(PAGMO_PREFER_TYPEID_NAME_EXTRACT)
         return detail::typeid_name_extract<T>(*this);
 #else
-        auto isl = dynamic_cast<const detail::isl_inner<T> *>(m_ptr->isl_ptr.get());
-        return isl == nullptr ? nullptr : &(isl->m_value);
+        auto isl = dynamic_cast<const detail::isl_inner<uncvref_t<T>> *>(m_ptr->isl_ptr.get());
+        return isl == nullptr ? nullptr : reinterpret_cast<const T *>(&(isl->m_value));
 #endif
     }
     /// Extract a pointer to the UDI used for construction.
@@ -1046,8 +1054,8 @@ public:
 #if defined(PAGMO_PREFER_TYPEID_NAME_EXTRACT)
         return detail::typeid_name_extract<T>(*this);
 #else
-        auto isl = dynamic_cast<detail::isl_inner<T> *>(m_ptr->isl_ptr.get());
-        return isl == nullptr ? nullptr : &(isl->m_value);
+        auto isl = dynamic_cast<detail::isl_inner<uncvref_t<T>> *>(m_ptr->isl_ptr.get());
+        return isl == nullptr ? nullptr : reinterpret_cast<T *>(&(isl->m_value));
 #endif
     }
     /// Check if the UDI used for construction is of type \p T.

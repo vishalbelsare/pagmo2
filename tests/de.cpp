@@ -1,4 +1,4 @@
-/* Copyright 2017-2021 PaGMO development team
+/* Copyright 2017-2026 PaGMO development team
 
 This file is part of the PaGMO library.
 
@@ -31,6 +31,7 @@ see https://www.gnu.org/licenses/. */
 #include <boost/test/unit_test.hpp>
 
 #include <iostream>
+#include <limits>
 #include <string>
 
 #include <boost/lexical_cast.hpp>
@@ -64,6 +65,8 @@ BOOST_AUTO_TEST_CASE(de_algorithm_construction)
 
     BOOST_CHECK_THROW((de{1234u, 0.7, 1.5, 2u, 1e-6, 1e-6, 23u}), std::invalid_argument);
     BOOST_CHECK_THROW((de{1234u, 0.7, -0.5, 2u, 1e-6, 1e-6, 23u}), std::invalid_argument);
+    BOOST_CHECK_THROW((de{1234u, std::numeric_limits<double>::quiet_NaN(), 0.5, 2u, 1e-6, 1e-6, 23u}),
+                      std::invalid_argument);
 }
 
 BOOST_AUTO_TEST_CASE(de_evolve_test)
@@ -172,5 +175,41 @@ BOOST_AUTO_TEST_CASE(de_serialization_test)
         BOOST_CHECK_CLOSE(std::get<2>(before_log[i]), std::get<2>(after_log[i]), 1e-8);
         BOOST_CHECK_CLOSE(std::get<3>(before_log[i]), std::get<3>(after_log[i]), 1e-8);
         BOOST_CHECK_CLOSE(std::get<4>(before_log[i]), std::get<4>(after_log[i]), 1e-8);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(bfe_usage_test)
+{
+    // bfe and serial evaluation must give identical results (same RNG stream).
+    problem prob{rosenbrock{5u}};
+    population pop{prob, 20u, 23u};
+    population pop1{prob, 20u, 23u};
+    population pop2{prob, 20u, 23u};
+
+    de uda1{20u, 0.7, 0.5, 2u, 1e-12, 1e-12, 23u};
+    uda1.set_verbosity(1u);
+    algorithm algo1{uda1};
+    pop1 = algo1.evolve(pop);
+
+    de uda2{20u, 0.7, 0.5, 2u, 1e-12, 1e-12, 23u};
+    uda2.set_verbosity(1u);
+    uda2.set_bfe(bfe{});
+    algorithm algo2{uda2};
+    pop2 = algo2.evolve(pop);
+
+    BOOST_CHECK(algo1.extract<de>()->get_log() == algo2.extract<de>()->get_log());
+    BOOST_CHECK(pop1.champion_x() == pop2.champion_x());
+    BOOST_CHECK(pop1.champion_f() == pop2.champion_f());
+
+    // All variants run with bfe without throwing and stay deterministic.
+    for (unsigned variant = 1u; variant <= 10u; ++variant) {
+        population p_init{prob, 10u, 11u};
+        de a_serial{5u, 0.7, 0.5, variant, 1e-12, 1e-12, 11u};
+        de a_bfe{5u, 0.7, 0.5, variant, 1e-12, 1e-12, 11u};
+        a_bfe.set_bfe(bfe{});
+        auto p_serial = a_serial.evolve(p_init);
+        auto p_bfe = a_bfe.evolve(p_init);
+        BOOST_CHECK(p_serial.champion_x() == p_bfe.champion_x());
+        BOOST_CHECK(p_serial.champion_f() == p_bfe.champion_f());
     }
 }

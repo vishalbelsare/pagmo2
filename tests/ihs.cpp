@@ -1,4 +1,4 @@
-/* Copyright 2017-2021 PaGMO development team
+/* Copyright 2017-2026 PaGMO development team
 
 This file is part of the PaGMO library.
 
@@ -31,10 +31,12 @@ see https://www.gnu.org/licenses/. */
 #include <boost/test/unit_test.hpp>
 
 #include <boost/lexical_cast.hpp>
+#include <limits>
 #include <pagmo/algorithm.hpp>
 #include <pagmo/algorithms/ihs.hpp>
 #include <pagmo/io.hpp>
 #include <pagmo/population.hpp>
+#include <pagmo/problems/dtlz.hpp>
 #include <pagmo/problems/hock_schittkowski_71.hpp>
 #include <pagmo/problems/inventory.hpp>
 #include <pagmo/problems/minlp_rastrigin.hpp>
@@ -65,6 +67,8 @@ BOOST_AUTO_TEST_CASE(ihs_algorithm_construction)
     BOOST_CHECK_THROW((ihs{1u, 0.85, 0.35, 0.34, 1e-5, 1., 42u}), std::invalid_argument);
     BOOST_CHECK_THROW((ihs{1u, 0.85, 0.35, 0.99, -0.43, 1., 42u}), std::invalid_argument);
     BOOST_CHECK_THROW((ihs{1u, 0.85, 0.35, 0.99, 0.4, 0.3, 42u}), std::invalid_argument);
+    BOOST_CHECK_THROW((ihs{1u, std::numeric_limits<double>::quiet_NaN(), 0.35, 0.99, 1e-5, 1., 42u}),
+                      std::invalid_argument);
 }
 
 struct mo_many {
@@ -200,4 +204,15 @@ BOOST_AUTO_TEST_CASE(ihs_integer_test)
             BOOST_CHECK_EQUAL(static_cast<int>(c), c);
         }
     }
+}
+
+BOOST_AUTO_TEST_CASE(ihs_non_finite_test)
+{
+    dtlz prob{1u, 5u, 2u};
+    population pop{prob, 10u, 42u};
+    auto x = pop.get_x()[0];
+    x[0] = std::numeric_limits<double>::infinity();
+    pop.set_x(0, x);
+    ihs uda{5u};
+    BOOST_CHECK_NO_THROW(pop = uda.evolve(pop));
 }

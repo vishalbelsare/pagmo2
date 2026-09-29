@@ -1,4 +1,4 @@
-/* Copyright 2017-2021 PaGMO development team
+/* Copyright 2017-2026 PaGMO development team
 
 This file is part of the PaGMO library.
 
@@ -48,7 +48,9 @@ boost::any default_gte_getter()
 
 } // namespace
 
+/// @cond
 std::function<boost::any()> gte_getter = &default_gte_getter;
+/// @endcond
 
 } // namespace detail
 

@@ -1,4 +1,4 @@
-/* Copyright 2017-2021 PaGMO development team
+/* Copyright 2017-2026 PaGMO development team
 
 This file is part of the PaGMO library.
 
@@ -69,7 +69,9 @@ vector_double default_bfe_cpp_impl(const problem &p, const vector_double &dvs)
 
 } // namespace
 
+/// @cond
 std::function<vector_double(const problem &, const vector_double &)> default_bfe_impl = &default_bfe_cpp_impl;
+/// @endcond
 
 } // namespace detail
 

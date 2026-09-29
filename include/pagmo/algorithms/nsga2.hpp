@@ -1,4 +1,4 @@
-/* Copyright 2017-2021 PaGMO development team
+/* Copyright 2017-2026 PaGMO development team
 
 This file is part of the PaGMO library.
 
@@ -149,7 +149,7 @@ public:
      */
     std::string get_name() const
     {
-        return "NSGA-II:";
+        return "NSGA-II: Non-dominated Sorting Genetic Algorithm II";
     }
 
     // Extra info

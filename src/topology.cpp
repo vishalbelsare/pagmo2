@@ -1,4 +1,4 @@
-/* Copyright 2017-2021 PaGMO development team
+/* Copyright 2017-2026 PaGMO development team
 
 This file is part of the PaGMO library.
 
@@ -140,6 +140,11 @@ std::pair<std::vector<std::size_t>, vector_double> topology::get_connections(std
     }
 
     return retval;
+}
+
+std::size_t topology::num_vertices() const
+{
+    return ptr()->num_vertices();
 }
 
 void topology::push_back()

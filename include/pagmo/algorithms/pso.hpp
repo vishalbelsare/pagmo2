@@ -1,4 +1,4 @@
-/* Copyright 2017-2021 PaGMO development team
+/* Copyright 2017-2026 PaGMO development team
 
 This file is part of the PaGMO library.
 
@@ -32,6 +32,8 @@ see https://www.gnu.org/licenses/. */
 #include <string>
 #include <tuple>
 #include <vector>
+
+#include <boost/optional.hpp>
 
 #include <pagmo/algorithm.hpp>
 #include <pagmo/detail/visibility.hpp>
@@ -223,6 +225,20 @@ public:
     }
 
 private:
+    struct memory {
+        std::vector<vector_double> m_V;
+        std::vector<vector_double> m_X;
+        std::vector<vector_double> m_lbX;
+        std::vector<vector_double> m_fit;
+        std::vector<vector_double> m_lbfit;
+        vector_double m_best_fit;
+        std::vector<std::vector<population::size_type>> m_neighb;
+        vector_double m_best_neighb;
+
+        template <typename Archive>
+        void serialize(Archive &, unsigned);
+    };
+
     // Object serialization
     friend class boost::serialization::access;
     template <typename Archive>
@@ -254,8 +270,7 @@ private:
     unsigned m_neighb_param;
     // memory
     bool m_memory;
-    // particles' velocities
-    mutable std::vector<vector_double> m_V;
+    mutable boost::optional<pso::memory> m_memory_data;
 
     mutable detail::random_engine_type m_e;
     unsigned m_seed;

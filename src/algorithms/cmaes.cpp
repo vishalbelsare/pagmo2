@@ -1,4 +1,4 @@
-/* Copyright 2017-2021 PaGMO development team
+/* Copyright 2017-2026 PaGMO development team
 
 This file is part of the PaGMO library.
 
@@ -48,6 +48,10 @@ see https://www.gnu.org/licenses/. */
 #include <pagmo/s11n.hpp>
 #include <pagmo/types.hpp>
 
+// NOTE: apparently this must be included *after*
+// the other serialization headers.
+#include <boost/serialization/optional.hpp>
+
 namespace pagmo
 {
 
@@ -56,22 +60,22 @@ cmaes::cmaes(unsigned gen, double cc, double cs, double c1, double cmu, double s
     : m_gen(gen), m_cc(cc), m_cs(cs), m_c1(c1), m_cmu(cmu), m_sigma0(sigma0), m_ftol(ftol), m_xtol(xtol),
       m_memory(memory), m_force_bounds(force_bounds), m_e(seed), m_seed(seed), m_verbosity(0u)
 {
-    if (((cc < 0.) || (cc > 1.)) && !(cc == -1)) {
+    if ((((cc < 0.) || (cc > 1.)) && !(cc == -1)) || (std::isfinite(cc) == false)) {
         pagmo_throw(std::invalid_argument,
                     "cc must be in [0,1] or -1 if its value has to be initialized automatically, a value of "
                         + std::to_string(cc) + " was detected");
     }
-    if (((cs < 0.) || (cs > 1.)) && !(cs == -1)) {
+    if ((((cs < 0.) || (cs > 1.)) && !(cs == -1)) || (std::isfinite(cs) == false)) {
         pagmo_throw(std::invalid_argument,
                     "cs needs to be in [0,1] or -1 if its value has to be initialized automatically, a value of "
                         + std::to_string(cs) + " was detected");
     }
-    if (((c1 < 0.) || (c1 > 1.)) && !(c1 == -1)) {
+    if ((((c1 < 0.) || (c1 > 1.)) && !(c1 == -1)) || (std::isfinite(c1) == false)) {
         pagmo_throw(std::invalid_argument,
                     "c1 needs to be in [0,1] or -1 if its value has to be initialized automatically, a value of "
                         + std::to_string(c1) + " was detected");
     }
-    if (((cmu < 0.) || (cmu > 1.)) && !(cmu == -1)) {
+    if ((((cmu < 0.) || (cmu > 1.)) && !(cmu == -1)) || (std::isfinite(cmu) == false)) {
         pagmo_throw(std::invalid_argument,
                     "cmu needs to be in [0,1] or -1 if its value has to be initialized automatically, a value of "
                         + std::to_string(cmu) + " was detected");
@@ -316,7 +320,30 @@ population cmaes::evolve(population pop) const
             for (decltype(dim) j = 0u; j < dim; ++j) {
                 dumb[j] = newpop[i](_(j));
             }
-            pop.set_x(i, dumb);
+            if (!m_bfe) {
+                // bfe not available
+                pop.set_x(i, dumb);
+            }
+        }
+        if (m_bfe) {
+            // bfe is available:
+            vector_double decision_vectors(lam * dim);
+            vector_double::size_type pos = 0u;
+            for (decltype(lam) i = 0u; i < lam; ++i) {
+                for (decltype(dim) j = 0u; j < dim; ++j) {
+                    decision_vectors[pos] = newpop[i](_(j));
+                    ++pos;
+                }
+            }
+            // run bfe.
+            auto fitnesses = (*m_bfe)(prob, decision_vectors);
+
+            for (decltype(lam) i = 0u; i < lam; ++i) {
+                for (decltype(dim) j = 0u; j < dim; ++j) {
+                    dumb[j] = newpop[i](_(j));
+                }
+                pop.set_xf(i, dumb, {fitnesses[i]});
+            }
         }
         counteval += lam;
         // 4 - We extract the elite from this generation.
@@ -389,6 +416,15 @@ void cmaes::set_seed(unsigned seed)
     m_seed = seed;
 }
 
+/// Sets the batch function evaluation scheme
+/**
+ * @param b batch function evaluation object
+ */
+void cmaes::set_bfe(const bfe &b)
+{
+    m_bfe = b;
+}
+
 /// Extra info
 /**
  * One of the optional methods of any user-defined algorithm (UDA).
@@ -434,8 +470,8 @@ template <typename Archive>
 void cmaes::serialize(Archive &ar, unsigned)
 {
     detail::archive(ar, m_gen, m_cc, m_cs, m_c1, m_cmu, m_sigma0, m_ftol, m_xtol, m_memory, m_force_bounds, sigma, mean,
-                    variation, newpop, B, D, C, invsqrtC, pc, ps, counteval, eigeneval, m_e, m_seed, m_verbosity,
-                    m_log);
+                    variation, newpop, B, D, C, invsqrtC, pc, ps, counteval, eigeneval, m_e, m_seed, m_verbosity, m_log,
+                    m_bfe);
 }
 
 } // namespace pagmo

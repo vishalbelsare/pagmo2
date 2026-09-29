@@ -1,4 +1,4 @@
-/* Copyright 2017-2021 PaGMO development team
+/* Copyright 2017-2026 PaGMO development team
 
 This file is part of the PaGMO library.
 
@@ -65,6 +65,22 @@ bool some_bound_is_equal(const problem &prob)
         }
     }
     return false;
+}
+
+// Checks that all genes of all individuals in xs are finite and within the bounds
+void check_population_bounds(const std::vector<vector_double> &xs,
+                             const std::pair<vector_double, vector_double> &bounds, const std::string &algo_name)
+{
+    for (decltype(xs.size()) i = 0u; i < xs.size(); ++i) {
+        for (decltype(xs[i].size()) j = 0u; j < xs[i].size(); ++j) {
+            if (!(xs[i][j] >= bounds.first[j]) || !(xs[i][j] <= bounds.second[j])) {
+                pagmo_throw(std::invalid_argument,
+                            "Individual " + std::to_string(i) + " has a gene at position "
+                                + std::to_string(j) + " that is outside the problem bounds. " + algo_name
+                                + " cannot deal with it.");
+            }
+        }
+    }
 }
 
 } // namespace detail
@@ -156,13 +172,20 @@ void force_bounds_reflection(vector_double &x, const vector_double &lb, const ve
     assert(x.size() == lb.size());
     assert(x.size() == ub.size());
     for (decltype(x.size()) j = 0u; j < x.size(); ++j) {
-        while (x[j] < lb[j] || x[j] > ub[j]) {
+        unsigned iter = 0u;
+        while ((x[j] < lb[j] || x[j] > ub[j]) && iter < 10u) {
             if (x[j] < lb[j]) {
                 x[j] = 2 * lb[j] - x[j];
-            }
-            if (x[j] > ub[j]) {
+            } else if (x[j] > ub[j]) {
                 x[j] = 2 * ub[j] - x[j];
             }
+            ++iter;
+        }
+        if (x[j] < lb[j]) {
+            x[j] = lb[j];
+        }
+        if (x[j] > ub[j]) {
+            x[j] = ub[j];
         }
     }
 }
